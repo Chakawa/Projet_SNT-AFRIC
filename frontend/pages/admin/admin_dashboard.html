@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Admin - SNT AFRIC</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Tableau de Bord Admin</h2>
+        <nav>
+            <ul>
+                <li><a href="manage_demands.html">Gérer les Demandes</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '../client/login.html';
+                return;
+            }
+
+            const response = await fetch('http://localhost:5000/api/admin/demands', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+        });
+
+        async function assignTechnician(demandeId) {
+            const technicienId = prompt('Entrez l\'ID du technicien à assigner:');
+            const token = localStorage.getItem('token');
+
+            const response = await fetch('http://localhost:5000/api/admin/assign', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ demandeId, technicienId })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert('Technicien assigné avec succès !');
+                window.location.reload();
+            } else {
+                alert(data.message);
+            }
+        }
+    </script>
+</body>
+</html>

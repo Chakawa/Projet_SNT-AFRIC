@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Technicien - SNT AFRIC</title>
+    <link rel="stylesheet" href="../frontend/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Ajout de styles pour les badges de priorité */
+        .priority-high { background-color: #ff5252; color: white; }
+        .priority-medium { background-color: #ffab40; color: white; }
+        .priority-low { background-color: #69f0ae; color: black; }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-pending { background-color: #ffecb3; color: #ff8f00; }
+        .status-in-progress { background-color: #bbdefb; color: #1976d2; }
+        .status-completed { background-color: #c8e6c9; color: #388e3c; }
+        
+        .action-btn {
+            padding: 5px 10px;
+            margin: 0 3px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-view { background-color: #e3f2fd; color: #1976d2; }
+        .btn-start { background-color: #e8f5e9; color: #2e7d32; }
+        .btn-complete { background-color: #f1f8e9; color: #689f38; }
+        .btn-report { background-color: #fff3e0; color: #ef6c00; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="../frontend/images/icons/veri.png" alt="SNT AFRIC" class="logo">
+                <div class="user-info">
+                    <img src="../frontend/images/photo_chaka.jpg" alt="Avatar" class="user-avatar">
+                    <span class="user-name">Technicien Chaka</span>
+                    <span class="user-role">Technicien</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active" data-section="dashboard">
+                        <i class="fas fa-home"></i>
+                        <span>Tableau de bord</span>
+                    </li>
+                    <li data-section="demandes">
+                        <i class="fas fa-list"></i>
+                        <span>Demandes assignées</span>
+                    </li>
+                    <li data-section="profil">
+                        <i class="fas fa-user"></i>
+                        <span>Mon profil</span>
+                    </li>
+                    <li data-section="parametres">
+                        <i class="fas fa-cog"></i>
+                        <span>Paramètres</span>
+                    </li>
+                    <li id="logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Déconnexion</span>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1 id="welcome-message">Bienvenue sur la plateforme de SNT AFRIC, Technicien Chaka</h1>
+                <div class="header-actions">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge" id="notification-count">3</span>
+                        <div class="notification-dropdown">
+                            <div class="notification-header">
+                                <h3>Notifications</h3>
+                                <a href="/notifications">Voir tout</a>
+                            </div>
+                            <div id="notification-dropdown">
+                                <div class="notification-item">
+                                    <i class="fas fa-ticket-alt notification-icon"></i>
+                                    <div class="notification-content">
+                                        <p>Nouvelle demande #4587 assignée</p>
+                                        <small>Il y a 15 minutes</small>
+                                    </div>
+                                </div>
+                                <div class="notification-item">
+                                    <i class="fas fa-clock notification-icon"></i>
+                                    <div class="notification-content">
+                                        <p>Rappel: Demande #4586 à terminer aujourd'hui</p>
+                                        <small>Il y a 2 heures</small>
+                                    </div>
+                                </div>
+                                <div class="notification-item">
+                                    <i class="fas fa-check-circle notification-icon"></i>
+                                    <div class="notification-content">
+                                        <p>Demande #4582 marquée comme terminée</p>
+                                        <small>Hier, 16:30</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="notification-footer">
+                                <a href="#" id="mark-all-read">Marquer tout comme lu</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Sections -->
+            <section id="dashboard-section" class="section active">
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-primary">
+                            <i class="fas fa-list"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Demandes en cours</h3>
+                            <p id="demandes-en-cours">5</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Demandes terminées</h3>
+                            <p id="demandes-terminees">12</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-warning">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Demandes en attente</h3>
+                            <p id="demandes-attente">2</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="priority-tasks">
+                    <h2>Demandes prioritaires</h2>
+                    <div class="tasks-list">
+                        <div class="task-item priority-high">
+                            <div class="task-info">
+                                <h3>#4587 - Panne réseau urgente</h3>
+                                <p>Client: Banque Côte d'Ivoire - Agence Plateau</p>
+                                <p>Date: Aujourd'hui, 09:30</p>
+                            </div>
+                            <div class="task-status">
+                                <span class="status-badge status-pending">En attente</span>
+                                <button class="btn-start">Commencer</button>
+                            </div>
+                        </div>
+                        <div class="task-item priority-medium">
+                            <div class="task-info">
+                                <h3>#4586 - Installation nouveau serveur</h3>
+                                <p>Client: Ministère des Finances</p>
+                                <p>Date: Hier, 14:00 - Échéance: Aujourd'hui</p>
+                            </div>
+                            <div class="task-status">
+                                <span class="status-badge status-in-progress">En cours</span>
+                                <button class="btn-complete">Terminer</button>
+                            </div>
+                        </div>
+                        <div class="task-item priority-low">
+                            <div class="task-info">
+                                <h3>#4583 - Maintenance préventive</h3>
+                                <p>Client: Orange CI - Siège</p>
+                                <p>Date: 12/05/2023 - Échéance: 15/05/2023</p>
+                            </div>
+                            <div class="task-status">
+                                <span class="status-badge status-in-progress">En cours</span>
+                                <button class="btn-report">Rapport</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Demandes Assignées Section -->
+            <section id="demandes-section" class="section">
+                <div class="section-header">
+                    <h2>Demandes Assignées</h2>
+                    <div class="filters">
+                        <select id="status-filter">
+                            <option value="all">Tous les statuts</option>
+                            <option value="pending">En attente</option>
+                            <option value="in-progress">En cours</option>
+                            <option value="completed">Terminé</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="requests-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Client</th>
+                                <th>Type</th>
+                                <th>Statut</th>
+                                <th>Date</th>
+                                <th>Priorité</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="technicien-demandes-list">
+                            <!-- Demandes fictives -->
+                            <tr>
+                                <td>#4587</td>
+                                <td>Banque Côte d'Ivoire</td>
+                                <td>Panne réseau</td>
+                                <td><span class="status-badge status-pending">En attente</span></td>
+                                <td>15/05/2025 09:30</td>
+                                <td><span class="priority-high">Haute</span></td>
+                                <td>
+                                    <button class="action-btn btn-view"><i class="fas fa-eye"></i> Voir</button>
+                                    <button class="action-btn btn-start"><i class="fas fa-play"></i> Démarrer</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#4586</td>
+                                <td>Ministère des Finances</td>
+                                <td>Installation serveur</td>
+                                <td><span class="status-badge status-in-progress">En cours</span></td>
+                                <td>14/05/2025 14:00</td>
+                                <td><span class="priority-medium">Moyenne</span></td>
+                                <td>
+                                    <button class="action-btn btn-view"><i class="fas fa-eye"></i> Voir</button>
+                                    <button class="action-btn btn-complete"><i class="fas fa-check"></i> Terminer</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#4585</td>
+                                <td>Orange CI</td>
+                                <td>Maintenance préventive</td>
+                                <td><span class="status-badge status-in-progress">En cours</span></td>
+                                <td>12/05/2025 10:00</td>
+                                <td><span class="priority-low">Basse</span></td>
+                                <td>
+                                    <button class="action-btn btn-view"><i class="fas fa-eye"></i> Voir</button>
+                                    <button class="action-btn btn-report"><i class="fas fa-file-alt"></i> Rapport</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#4584</td>
+                                <td>MTN CI</td>
+                                <td>Configuration pare-feu</td>
+                                <td><span class="status-badge status-completed">Terminé</span></td>
+                                <td>10/05/2025 11:30</td>
+                                <td><span class="priority-medium">Moyenne</span></td>
+                                <td>
+                                    <button class="action-btn btn-view"><i class="fas fa-eye"></i> Voir</button>
+                                    <button class="action-btn btn-report"><i class="fas fa-file-alt"></i> Rapport</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#4583</td>
+                                <td>Société Générale</td>
+                                <td>Problème VPN</td>
+                                <td><span class="status-badge status-completed">Terminé</span></td>
+                                <td>08/05/2025 16:45</td>
+                                <td><span class="priority-high">Haute</span></td>
+                                <td>
+                                    <button class="action-btn btn-view"><i class="fas fa-eye"></i> Voir</button>
+                                    <button class="action-btn btn-report"><i class="fas fa-file-alt"></i> Rapport</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Profil Section -->
+            <section id="profil-section" class="section">
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <img src="../frontend/images/photo_chaka.jpg" alt="Profile Photo">
+                            <button class="btn btn-secondary">Changer la photo</button>
+                        </div>
+                        <div class="profile-info">
+                            <h2 id="profile-name">Technicien Chaka</h2>
+                            <p class="profile-role">Technicien</p>
+                            <p class="profile-specialite">Spécialité: Réseaux & Sécurité</p>
+                            <p class="profile-email">fofanachaka76@gmail.com</p>
+                            <p class="profile-phone">+225 05 76 09 75 37</p>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-details">
+                        <div class="detail-card">
+                            <h3>Informations professionnelles</h3>
+                            <form id="professional-info-form">
+                                <div class="form-group">
+                                    <label>Spécialité</label>
+                                    <input type="text" id="specialite" value="Réseaux & Sécurité">
+                                </div>
+                                <div class="form-group">
+                                    <label>Disponibilité</label>
+                                    <select id="disponibilite">
+                                        <option value="available" selected>Disponible</option>
+                                        <option value="unavailable">Non disponible</option>
+                                        <option value="vacation">En vacances</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Zone d'intervention</label>
+                                    <input type="text" id="zone" value="Yamoussoukro, Dioulabougou">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="./js/dashboard.js"></script>
+    <script>
+        // Script pour simuler le changement de section
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuItems = document.querySelectorAll('.sidebar-nav li');
+            
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Retirer la classe active de tous les éléments
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                    
+                    // Ajouter la classe active à l'élément cliqué
+                    this.classList.add('active');
+                    
+                    // Afficher la section correspondante
+                    const section = this.getAttribute('data-section');
+                    if(section) {
+                        document.getElementById(`${section}-section`).classList.add('active');
+                    }
+                });
+            });
+            
+            // Simulation de notifications
+            const notificationBell = document.querySelector('.notifications i.fa-bell');
+            const notificationDropdown = document.querySelector('.notification-dropdown');
+            
+            notificationBell.addEventListener('click', function(e) {
+                e.stopPropagation();
+                notificationDropdown.style.display = notificationDropdown.style.display === 'block' ? 'none' : 'block';
+            });
+            
+            // Fermer les notifications quand on clique ailleurs
+            document.addEventListener('click', function() {
+                notificationDropdown.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demande Fibre Optique - SNT AFRIC</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+    <style>
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Demande Fibre Optique</h2>
+        <form id="demandeFibreForm">
+            <div class="form-group">
+                <label for="type_demande">Type de demande :</label>
+                <select id="type_demande" name="type_demande" required>
+                    <option value="installation">Installation</option>
+                    <option value="maintenance">Maintenance</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="adresse">Adresse :</label>
+                <input type="text" id="adresse" name="adresse" required>
+            </div>
+            <div class="form-group">
+                <label for="disponibilite">Disponibilité :</label>
+                <input type="date" id="disponibilite" name="disponibilite" required>
+            </div>
+            <div class="form-group">
+                <label for="creneau_horaire">Créneau horaire :</label>
+                <select id="creneau_horaire" name="creneau_horaire" required>
+                    <option value="matin">Matin</option>
+                    <option value="apres-midi">Après-midi</option>
+                    <option value="soir">Soir</option>
+                    <option value="plein_jour">Plein jour</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="details">Détails :</label>
+                <textarea id="details" name="details" required></textarea>
+            </div>
+            <button type="submit">Soumettre la demande</button>
+        </form>
+
+        <div id="messageInfo">
+            <h3>📢 Demande enregistrée avec succès</h3>
+            <p>Votre demande a bien été prise en compte.</p>
+            <p><strong>Veuillez contacter votre fournisseur d’accès Internet</strong> pour finaliser la commande.</p>
+            <p>Une fois validée, <strong>SNT AFRIC</strong> interviendra pour effectuer les travaux techniques.</p>
+            <button id="btnAccueil">OK</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('demandeFibreForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert("Vous devez être connecté pour soumettre une demande.");
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const typeDemande = document.getElementById('type_demande').value;
+            const adresse = document.getElementById('adresse').value;
+            const disponibilite = document.getElementById('disponibilite').value;
+            const creneauHoraire = document.getElementById('creneau_horaire').value;
+            const details = document.getElementById('details').value;
+            const serviceId = 1; // Fibre Optique
+
+            try {
+                const response = await fetch('http://localhost:5000/api/demandes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        typeDemande,
+                        adresse,
+                        disponibilite,
+                        creneauHoraire,
+                        details,
+                        serviceId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('demandeFibreForm').reset();
+                    document.getElementById('demandeFibreForm').style.display = "none";
+                    document.getElementById('messageInfo').style.display = "block";
+                } else {
+                    alert(data.message || "Une erreur est survenue.");
+                }
+            } catch (error) {
+                alert("Erreur de connexion au serveur.");
+                console.error(error);
+            }
+        });
+
+        // Action bouton OK
+        document.getElementById('btnAccueil').addEventListener('click', function () {
+            window.location.href = 'client_dashboard.html'; 
+        });
+    </script>
+</body>
+</html>

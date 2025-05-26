@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - SNT AFRIC</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-container">
+            <h2>Connexion</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn-primary">Se connecter</button>
+                <p class="text-center">Pas encore inscrit ? <a href="register.html">S'inscrire</a></p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('http://localhost:5000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+            console.log(data); // Ajoute ce log pour vérifier la réponse
+
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                const niveauAcces = data.niveauAcces;
+                if (niveauAcces === 'admin') {
+                    window.location.href = '../admin/admin_dashboard.html';
+                } else if (niveauAcces === 'technicien') {
+                    window.location.href = '../technician/technician_dashboard.html';
+                } else {
+                    window.location.href = 'client_dashboard.html';
+                }
+            } else {
+                alert(data.message);
+            }
+        });
+    </script>
+</body>
+</html>

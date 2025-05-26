@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Demandes Assignées - SNT AFRIC</title>
+  <style>
+    * { box-sizing: border-box; margin:0; padding:0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+      background: linear-gradient(to right, #eef2f3, #c95f08);
+      color: #333; padding:20px;
+    }
+    .container {
+      width:90%; max-width:900px;
+      background:#fff; margin:0 auto;
+      padding:20px; border-radius:10px;
+      box-shadow:0 8px 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align:center; margin-bottom:16px;
+      font-size:24px; color:#222;
+    }
+    .table-responsive {
+      overflow-x:auto; margin-top:10px;
+    }
+    table {
+      width:100%; border-collapse:collapse; min-width:800px;
+    }
+    th, td {
+      padding:12px 15px;
+      border-bottom:1px solid #ddd;
+      border-right:1px solid #ddd;
+      text-align:left;
+    }
+    th:last-child, td:last-child {
+      border-right: none;
+    }
+    th {
+      background:#4800ff; color:#fff;
+      position:sticky; top:0; z-index:2;
+    }
+    @media (max-width:600px) {
+      .container { padding:10px; }
+      th, td { padding:8px 10px; font-size:14px; }
+      .table-responsive { margin:0 -10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Demandes Assignées</h2>
+    <div class="table-responsive">
+      <table id="assignedDemandsTable">
+        <thead>
+          <tr>
+            <th>ID</th><th>Client</th><th>Service</th><th>Type de Demande</th>
+            <th>Adresse</th><th>Disponibilité</th><th>Créneau Horaire</th>
+            <th>Détails</th><th>Statut</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return window.location.href = '../client/login.html';
+
+      const res = await fetch('http://localhost:5000/api/technician/demands', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      const demands = await res.json();
+      const tbody = document.querySelector('#assignedDemandsTable tbody');
+      demands.forEach(d => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${d.id}</td>
+          <td>${d.user_id}</td>
+          <td>${d.service_id}</td>
+          <td>${d.type_demande}</td>
+          <td>${d.adresse}</td>
+          <td>${d.disponibilite}</td>
+          <td>${d.creneau_horaire}</td>
+          <td>${d.details}</td>
+          <td>${d.statut}</td>`;
+        tbody.appendChild(tr);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Client - SNT AFRIC</title>
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="../frontend/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="../frontend/images/icons/veri.png" alt="SNT AFRIC" class="logo">
+                <div class="user-info">
+                    <img src="../frontend/images/avatar.jpg" alt="Avatar" class="user-avatar">
+                    <span class="user-name">John Doe</span>
+                    <span class="user-role">Client</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active" data-section="dashboard">
+                        <i class="fas fa-home"></i>
+                        <span>Tableau de bord</span>
+                    </li>
+                    <li data-section="demandes">
+                        <i class="fas fa-list"></i>
+                        <span>Mes demandes</span>
+                    </li>
+                    <li data-section="nouvelle-demande">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Nouvelle demande</span>
+                    </li>
+                    <li data-section="suivi">
+                        <i class="fas fa-tasks"></i>
+                        <span>Suivi des demandes</span>
+                    </li>
+                    <li data-section="profil">
+                        <i class="fas fa-user"></i>
+                        <span>Mon profil</span>
+                    </li>
+                    <li id="logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Déconnexion</span>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1 id="welcome-message">Bienvenue, John Doe</h1>
+                <div class="header-actions">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Sections -->
+            <section id="dashboard-section" class="section active">
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-primary">
+                            <i class="fas fa-list"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Demandes en cours</h3>
+                            <p id="demandes-en-cours">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Demandes terminées</h3>
+                            <p id="demandes-terminees">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <h2>Services disponibles</h2>
+                    <div class="action-grid">
+                        <div class="action-card" onclick="loadRequestForm('fibre')">
+                            <i class="fas fa-network-wired"></i>
+                            <span>Fibre Optique</span>
+                        </div>
+                        <div class="action-card" onclick="loadRequestForm('video')">
+                            <i class="fas fa-video"></i>
+                            <span>Vidéosurveillance</span>
+                        </div>
+                        <div class="action-card" onclick="loadRequestForm('telephonie')">
+                            <i class="fas fa-phone-alt"></i>
+                            <span>Téléphonie</span>
+                        </div>
+                        <div class="action-card" onclick="loadRequestForm('it')">
+                            <i class="fas fa-laptop-code"></i>
+                            <span>Maintenance IT</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mes Demandes Section -->
+            <section id="demandes-section" class="section">
+                <div class="section-header">
+                    <h2>Mes Demandes</h2>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="requests-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Type</th>
+                                <th>Statut</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="demandes-list">
+                            <!-- Dynamically filled -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Nouvelle Demande Section -->
+            <section id="nouvelle-demande-section" class="section">
+                <h2>Nouvelle Demande</h2>
+                <div class="request-options">
+                    <div class="request-card" onclick="loadRequestForm('fibre')">
+                        <i class="fas fa-network-wired"></i>
+                        <h3>Fibre Optique</h3>
+                        <p>Demande d'installation ou réparation</p>
+                    </div>
+                    <div class="request-card" onclick="loadRequestForm('video')">
+                        <i class="fas fa-video"></i>
+                        <h3>Vidéosurveillance</h3>
+                        <p>Installation de caméras de sécurité</p>
+                    </div>
+                    <div class="request-card" onclick="loadRequestForm('telephonie')">
+                        <i class="fas fa-phone-alt"></i>
+                        <h3>Téléphonie</h3>
+                        <p>Configuration de système téléphonique</p>
+                    </div>
+                    <div class="request-card" onclick="loadRequestForm('it')">
+                        <i class="fas fa-laptop-code"></i>
+                        <h3>Maintenance IT</h3>
+                        <p>Support technique et maintenance</p>
+                    </div>
+                </div>
+                
+                <!-- Dynamic form container -->
+                <div id="request-form-container" class="request-form-container"></div>
+            </section>
+
+            <!-- Suivi Section -->
+            <section id="suivi-section" class="section">
+                <h2>Suivi des Demandes</h2>
+                <div class="timeline-container" id="request-timeline">
+                    <!-- Dynamically filled -->
+                </div>
+            </section>
+
+            <!-- Profil Section -->
+            <section id="profil-section" class="section">
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <img src="../frontend/images/avatar.jpg" alt="Profile Photo">
+                        </div>
+                        <div class="profile-info">
+                            <h2 id="profile-name">John Doe</h2>
+                            <p class="profile-email">john.doe@example.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-details">
+                        <form id="profile-form">
+                            <div class="form-group">
+                                <label>Nom complet</label>
+                                <input type="text" id="full-name" value="John Doe">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="email" value="john.doe@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Téléphone</label>
+                                <input type="tel" id="phone" value="+225 07 00 00 00 00">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="./js/dashboard.js"></script>
+    <script>
+        // Global variables
+        const API_BASE_URL = 'http://localhost:5000/api';
+        let currentUser = null;
+
+        // On page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            setupNavigation();
+            loadUserData();
+            loadDashboardStats();
+            loadUserRequests();
+        });
+
+        // // Check if user is authenticated
+        // function checkAuth() {
+        //     const token = localStorage.getItem('token');
+        //     if (!token) {
+        //         window.location.href = 'login.html';
+        //     }
+        // }
+
+        // Setup sidebar navigation
+        function setupNavigation() {
+            const navItems = document.querySelectorAll('.sidebar-nav li[data-section]');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const sectionId = this.getAttribute('data-section');
+                    
+                    // Update active navigation
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show corresponding section
+                    document.querySelectorAll('.section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    document.getElementById(`${sectionId}-section`).classList.add('active');
+                });
+            });
+
+            // Logout handler
+            document.getElementById('logout').addEventListener('click', function() {
+                localStorage.removeItem('token');
+                window.location.href = 'login.html';
+            });
+        }
+
+        // Load user data
+        async function loadUserData() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE_URL}/users/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    currentUser = await response.json();
+                    updateUserUI();
+                } else {
+                    throw new Error('Failed to load user data');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Erreur de chargement des données utilisateur');
+            }
+        }
+
+        // Update UI with user data
+        function updateUserUI() {
+            if (!currentUser) return;
+            
+            document.getElementById('welcome-message').textContent = `Bienvenue, ${currentUser.name}`;
+            document.getElementById('profile-name').textContent = currentUser.name;
+            document.getElementById('full-name').value = currentUser.name;
+            document.getElementById('email').value = currentUser.email;
+            document.getElementById('phone').value = currentUser.phone;
+        }
+
+        // Load dashboard statistics
+        async function loadDashboardStats() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE_URL}/requests/stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const stats = await response.json();
+                    document.getElementById('demandes-en-cours').textContent = stats.pending;
+                    document.getElementById('demandes-terminees').textContent = stats.completed;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Load user requests
+        async function loadUserRequests() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE_URL}/requests`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const requests = await response.json();
+                    renderRequestsTable(requests);
+                }
+            } catch (error) {
+                console.error('Error loading requests:', error);
+            }
+        }
+
+        // Render requests table
+        function renderRequestsTable(requests) {
+            const tbody = document.getElementById('demandes-list');
+            tbody.innerHTML = '';
+            
+            requests.forEach(request => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${request.id}</td>
+                    <td>${getRequestType(request.serviceId)}</td>
+                    <td><span class="status-badge ${request.status}">${request.status}</span></td>
+                    <td>${new Date(request.createdAt).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-sm btn-info" onclick="viewRequestDetails(${request.id})">
+                            <i class="fas fa-eye"></i> Détails
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Get request type name
+        function getRequestType(serviceId) {
+            const types = {
+                1: 'Fibre Optique',
+                2: 'Vidéosurveillance',
+                3: 'Téléphonie',
+                4: 'Maintenance IT'
+            };
+            return types[serviceId] || 'Autre';
+        }
+
+        // Load request form based on type
+        function loadRequestForm(type) {
+    const container = document.getElementById('request-form-container');
+    container.innerHTML = '';
+    
+    // Show nouvelle-demande section
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('nouvelle-demande-section').classList.add('active');
+    
+    // Update navigation
+    document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
+    document.querySelector(`.sidebar-nav li[data-section="nouvelle-demande"]`).classList.add('active');
+    
+    // Load appropriate form
+    let formHTML = '';
+    let serviceId = 1;
+    
+    switch(type) {
+        case 'fibre':
+            serviceId = 1;
+            formHTML = `
+                <h3>Demande Fibre Optique</h3>
+                <form id="${type}-form" class="request-form">
+                    <div class="form-group">
+                        <label for="type_demande">Type de demande :</label>
+                        <select id="type_demande" name="type_demande" required>
+                            <option value="installation">Installation</option>
+                            <option value="maintenance">Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="adresse">Adresse :</label>
+                        <input type="text" id="adresse" name="adresse" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="disponibilite">Disponibilité :</label>
+                        <input type="date" id="disponibilite" name="disponibilite" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="creneau_horaire">Créneau horaire :</label>
+                        <select id="creneau_horaire" name="creneau_horaire" required>
+                            <option value="matin">Matin</option>
+                            <option value="apres-midi">Après-midi</option>
+                            <option value="soir">Soir</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="details">Détails :</label>
+                        <textarea id="details" name="details" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Soumettre la demande</button>
+                </form>
+            `;
+            break;
+            
+        case 'video':
+            serviceId = 2;
+            formHTML = `
+                <h3>Demande Vidéosurveillance</h3>
+                <form id="${type}-form" class="request-form">
+                    <div class="form-group">
+                        <label for="type_demande">Type de demande :</label>
+                        <select id="type_demande" name="type_demande" required>
+                            <option value="installation">Installation</option>
+                            <option value="maintenance">Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombre_cameras">Nombre de caméras :</label>
+                        <input type="number" id="nombre_cameras" name="nombre_cameras" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adresse">Adresse :</label>
+                        <input type="text" id="adresse" name="adresse" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="details">Détails supplémentaires :</label>
+                        <textarea id="details" name="details"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Soumettre la demande</button>
+                </form>
+            `;
+            break;
+            
+        case 'telephonie':
+            serviceId = 3;
+            formHTML = `
+                <h3>Demande Téléphonie</h3>
+                <form id="${type}-form" class="request-form">
+                    <div class="form-group">
+                        <label for="type_demande">Type de demande :</label>
+                        <select id="type_demande" name="type_demande" required>
+                            <option value="installation">Installation</option>
+                            <option value="maintenance">Maintenance</option>
+                            <option value="configuration">Configuration</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombre_lignes">Nombre de lignes :</label>
+                        <input type="number" id="nombre_lignes" name="nombre_lignes" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="type_systeme">Type de système :</label>
+                        <select id="type_systeme" name="type_systeme" required>
+                            <option value="analogique">Analogique</option>
+                            <option value="voip">VOIP</option>
+                            <option value="hybride">Hybride</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="details">Détails :</label>
+                        <textarea id="details" name="details" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Soumettre la demande</button>
+                </form>
+            `;
+            break;
+            
+        case 'it':
+            serviceId = 4;
+            formHTML = `
+                <h3>Demande Maintenance IT</h3>
+                <form id="${type}-form" class="request-form">
+                    <div class="form-group">
+                        <label for="type_demande">Type de demande :</label>
+                        <select id="type_demande" name="type_demande" required>
+                            <option value="depannage">Dépannage</option>
+                            <option value="maintenance">Maintenance préventive</option>
+                            <option value="installation">Installation</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="equipements">Équipements concernés :</label>
+                        <select id="equipements" name="equipements" multiple required>
+                            <option value="ordinateur">Ordinateur</option>
+                            <option value="serveur">Serveur</option>
+                            <option value="reseau">Équipement réseau</option>
+                            <option value="imprimante">Imprimante</option>
+                            <option value="logiciel">Logiciel</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="urgence">Niveau d'urgence :</label>
+                        <select id="urgence" name="urgence" required>
+                            <option value="normal">Normal</option>
+                            <option value="urgent">Urgent</option>
+                            <option value="critique">Critique</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="details">Description du problème :</label>
+                        <textarea id="details" name="details" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Soumettre la demande</button>
+                </form>
+            `;
+            break;
+    }
+    
+    container.innerHTML = formHTML;
+    
+    // Add event listener for the form
+    document.getElementById(`${type}-form`).addEventListener('submit', async function(e) {
+        e.preventDefault();
+        await submitRequest(serviceId, type);
+    });
+}
+            const container = document.getElementById('request-form-container');
+            
+            // Show nouvelle-demande section
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('nouvelle-demande-section').classList.add('active');
+            
+            // Update navigation
+            document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
+            document.querySelector(`.sidebar-nav li[data-section="nouvelle-demande"]`).classList.add('active');
+            
+        // Submit request to API
+        async function submitRequest(serviceId) {
+            try {
+                const token = localStorage.getItem('token');
+                const formData = {
+                    typeDemande: document.getElementById('type_demande').value,
+                    adresse: document.getElementById('adresse').value,
+                    disponibilite: document.getElementById('disponibilite').value,
+                    creneauHoraire: document.getElementById('creneau_horaire').value,
+                    details: document.getElementById('details').value,
+                    serviceId: serviceId
+                };
+
+                const response = await fetch(`${API_BASE_URL}/requests`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    alert('Demande soumise avec succès!');
+                    loadUserRequests();
+                    loadDashboardStats();
+                    document.getElementById('request-form-container').innerHTML = '';
+                } else {
+                    const error = await response.json();
+                    alert(error.message || 'Erreur lors de la soumission');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Erreur de connexion au serveur');
+            }
+        }
+
+        // View request details
+        function viewRequestDetails(requestId) {
+            // Implement request details view
+            console.log('View details for request:', requestId);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gérer les Demandes - SNT AFRIC</title>
+  <style>
+    * { box-sizing: border-box; margin:0; padding:0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+      background: linear-gradient(to right, #eef2f3, #c95f08);
+      color: #333; padding:20px;
+    }
+
+    .container {
+      width: 90%; max-width: 900px;
+      background: #fff; margin:0 auto;
+      padding:20px; border-radius:10px;
+      box-shadow:0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align:center; margin-bottom:16px;
+      font-size:24px; color:#222;
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-top:10px;
+    }
+
+    table {
+      width:100%;
+      border-collapse: collapse;
+      min-width: 800px;
+    }
+
+    th, td {
+      padding:12px 15px;
+      border-bottom:1px solid #dddddd;
+      border-right:1px solid #ddd;
+      text-align:left;
+    }
+
+    th:last-child,
+    td:last-child {
+      border-right: none;
+    }
+
+    th {
+      background:#4800ff; color:#fff;
+      position: sticky; top:0; z-index:2;
+    }
+
+    .btn-toggle {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #4800ff;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: background 0.3s ease;
+    }
+
+    .btn-toggle:hover {
+      background: #3600cc;
+    }
+
+    .center-btn {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 600px) {
+      .container { padding:10px; }
+      th, td { padding:8px 10px; font-size:14px; }
+      .table-responsive { margin:0 -10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Gérer les Demandes</h2>
+
+    <!-- Bouton d'affichage des demandes archivées -->
+    <div class="center-btn">
+      <button id="toggleArchivedBtn" class="btn-toggle">Voir les demandes archivées</button>
+    </div>
+
+    <!-- Tableau principal -->
+    <div class="table-responsive">
+      <table id="demandsTable">
+        <thead>
+          <tr>
+            <th>ID</th><th>Client</th><th>Service</th><th>Type de Demande</th>
+            <th>Adresse</th><th>Disponibilité</th><th>Créneau Horaire</th>
+            <th>Détails</th><th>Statut</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Tableau des demandes archivées -->
+    <div id="archivedContainer" class="table-responsive" style="display:none; margin-top: 30px;">
+      <h3 style="text-align:center; margin-bottom:10px;">Demandes Archivées</h3>
+      <table id="archivedTable">
+        <thead>
+          <tr>
+            <th>ID</th><th>Client</th><th>Service</th><th>Type de Demande</th>
+            <th>Adresse</th><th>Disponibilité</th><th>Créneau Horaire</th>
+            <th>Détails</th><th>Statut</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return window.location.href = '../client/login.html';
+
+      const res = await fetch('http://localhost:5000/api/admin/demands', {
+        headers:{ 'Authorization':`Bearer ${token}` }
+      });
+      const demands = await res.json();
+      const tbody = document.querySelector('#demandsTable tbody');
+      demands.forEach(d => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${d.id}</td>
+          <td>${d.user_id}</td>
+          <td>${d.service_id}</td>
+          <td>${d.type_demande}</td>
+          <td>${d.adresse}</td>
+          <td>${d.disponibilite}</td>
+          <td>${d.creneau_horaire}</td>
+          <td>${d.details}</td>
+          <td>${d.statut}</td>
+          <td>
+            <button onclick="assignTechnician(${d.id})">Assigner</button>
+            <button onclick="editDemand(${d.id})">Modifier</button>
+            <button onclick="deleteDemand(${d.id})">Supprimer</button>
+            <button onclick="archiveDemand(${d.id})">Archiver</button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    });
+
+    async function assignTechnician(id) {
+      const tech = prompt('ID du technicien ?');
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:5000/api/admin/assign',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${token}`
+        },
+        body: JSON.stringify({ demandeId:id, technicienId:tech })
+      });
+      const data = await res.json();
+      if (res.ok) alert('Technicien assigné !'), location.reload();
+      else alert(data.message);
+    }
+
+    async function deleteDemand(id) {
+      if (!confirm("Voulez-vous vraiment supprimer cette demande ?")) return;
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:5000/api/admin/demands/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok) alert('Demande supprimée.'), location.reload();
+      else alert(data.message || "Erreur lors de la suppression.");
+    }
+
+    async function editDemand(id) {
+      const nouveauStatut = prompt("Entrez le nouveau statut (ex: en cours, terminé...)");
+      if (!nouveauStatut) return;
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:5000/api/admin/demands/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ statut: nouveauStatut })
+      });
+      const data = await res.json();
+      if (res.ok) alert('Demande mise à jour.'), location.reload();
+      else alert(data.message || "Erreur lors de la modification.");
+    }
+
+    async function archiveDemand(id) {
+      if (!confirm("Archiver cette demande ?")) return;
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:5000/api/admin/demands/${id}/archive`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ archive: true })
+      });
+      const data = await res.json();
+      if (res.ok) alert('Demande archivée.'), location.reload();
+      else alert(data.message || "Erreur lors de l'archivage.");
+    }
+
+    // Gérer l'affichage des demandes archivées
+    document.getElementById('toggleArchivedBtn').addEventListener('click', async () => {
+      const container = document.getElementById('archivedContainer');
+      const tbody = document.querySelector('#archivedTable tbody');
+      const btn = document.getElementById('toggleArchivedBtn');
+
+      if (container.style.display === 'none') {
+        // Charger les archivées
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://localhost:5000/api/admin/demands/archives', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const archives = await res.json();
+
+        tbody.innerHTML = '';
+        archives.forEach(d => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${d.id}</td>
+            <td>${d.user_id}</td>
+            <td>${d.service_id}</td>
+            <td>${d.type_demande}</td>
+            <td>${d.adresse}</td>
+            <td>${d.disponibilite}</td>
+            <td>${d.creneau_horaire}</td>
+            <td>${d.details}</td>
+            <td>${d.statut}</td>`;
+          tbody.appendChild(tr);
+        });
+
+        container.style.display = 'block';
+        btn.textContent = "Masquer les demandes archivées";
+      } else {
+        container.style.display = 'none';
+        btn.textContent = "Voir les demandes archivées";
+      }
+    });
+  </script>
+</body>
+</html>
