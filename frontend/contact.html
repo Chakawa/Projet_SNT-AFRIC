@@ -13,7 +13,7 @@
         <title>SNT AFRIC - Solutions Professionnelles Fibre Optique & Sécurité</title>
         
         <!-- Favicon -->
-        <link rel="icon" href="../frontend/images/icons/icon snt_afric1.png">
+        <link rel="icon" href="./images/icons/icon snt_afric1.png">
         
         <!-- Google Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -66,7 +66,7 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-white">
             <div class="container">
                 <a class="navbar-brand" href="index.html">
-                    <img src="../frontend/images/icons/veri.png" alt="SNT AFRIC" class="header-logo">
+                    <img src="./images/icons/veri.png" alt="SNT AFRIC" class="header-logo">
                 </a>
                 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,7 +91,7 @@
     </header>
 
     <!-- Page Banner -->
-    <section class="page-banner" style="background-image: url('../frontend/images/traveauxx2.jpg')">
+    <section class="page-banner" style="background-image: url('./images/traveauxx2.jpg')">
         <div class="container">
             <div class="row">
                 <div class="col-12">
@@ -254,7 +254,7 @@
             <div class="row g-4">
                 <div class="col-lg-4">
                     <div class="footer-about">
-                        <img src="../frontend/images/icons/5.png" alt="SNT AFRIC" class="footer-logo mb-3">
+                        <img src="./images/icons/5.png" alt="SNT AFRIC" class="footer-logo mb-3">
                         <p>SNT AFRIC est un leader des solutions réseau, sécurité et Téléphonie IT en Côte d'Ivoire.</p>
                         <div class="social-links mt-4">
                             <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -318,34 +318,56 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="assets/js/main.js"></script>
-    
-    <script>
-        // Préloader
-        $(window).on('load', function() {
-            $('.preloader').fadeOut('slow');
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="assets/js/main.js"></script>
+
+<script>
+    const BASE_URL = "https://snt-backend-9hhe.onrender.com";
+
+    // Préloader
+    $(window).on('load', function() {
+        $('.preloader').fadeOut('slow');
+    });
+
+    // Contact Form Submission
+    $('#contactForm').submit(function(e) {
+        e.preventDefault();
+        alert('Merci pour votre message! Nous vous contacterons bientôt.');
+        this.reset();
+    });
+
+    // Map Initialization
+    var map = L.map('map').setView([6.8167, -5.2833], 13); // Coordonnées de Yamoussoukro
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    L.marker([6.8167, -5.2833]).addTo(map)
+        .bindPopup('SNT AFRIC<br>Siège social')
+        .openPopup();
+
+    // Appel API vers le backend (exemple)
+    $(document).ready(function() {
+        $.ajax({
+            url: `${BASE_URL}/api/items`,  // Remplace par ton endpoint réel
+            method: "GET",
+            success: function(data) {
+                console.log("Données reçues du backend :", data);
+                // Par exemple, afficher dans une liste si tu as un container avec id="liste-items"
+                $('#liste-items').empty();
+                data.forEach(item => {
+                    $('#liste-items').append(`<li>${item.name}</li>`);
+                });
+            },
+            error: function(err) {
+                console.error("Erreur lors de l'appel API :", err);
+            }
         });
+    });
+</script>
 
-        // Contact Form Submission
-        $('#contactForm').submit(function(e) {
-            e.preventDefault();
-            alert('Merci pour votre message! Nous vous contacterons bientôt.');
-            this.reset();
-        });
-
-        // Map Initialization
-        var map = L.map('map').setView([6.8167, -5.2833], 13); // Coordonnées de Yamoussoukro
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        L.marker([6.8167, -5.2833]).addTo(map)
-            .bindPopup('SNT AFRIC<br>Siège social')
-            .openPopup();
-    </script>
 </body>
 </html>
