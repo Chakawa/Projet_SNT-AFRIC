@@ -84,126 +84,106 @@ function loadSectionData(sectionId) {
 }
 
 function loadClientData(userId) {
-    // Simulate API call to get client data
-    setTimeout(() => {
-        // Update stats
-        document.getElementById('demandes-en-cours').textContent = '2';
-        document.getElementById('demandes-terminees').textContent = '5';
-        document.getElementById('paiements-attente').textContent = '1';
-        
-        // Load demandes
-        const demandesList = [
-            { id: '456', type: 'Réseau', statut: 'En cours', date: '2023-05-15', technicien: 'Technicien Dupont' },
-            { id: '123', type: 'Logiciel', statut: 'Terminé', date: '2023-05-10', technicien: 'Technicien Martin' }
-        ];
-        
-        const demandesHtml = demandesList.map(demande => `
-            <tr>
-                <td>${demande.id}</td>
-                <td>${demande.type}</td>
-                <td><span class="status-badge ${demande.statut.toLowerCase().replace(' ', '-')}">${demande.statut}</span></td>
-                <td>${demande.date}</td>
-                <td>${demande.technicien}</td>
-                <td>
-                    <button class="btn btn-secondary btn-sm">Détails</button>
-                </td>
-            </tr>
-        `).join('');
-        
-        document.getElementById('demandes-list').innerHTML = demandesHtml;
-        
-        // Load paiements
-        const paiementsList = [
-            { id: '789', demande: '456', montant: '25,000 FCFA', methode: 'Orange Money', statut: 'Complété', date: '2023-05-12' },
-            { id: '321', demande: '123', montant: '15,000 FCFA', methode: 'Wave', statut: 'En attente', date: '2023-05-08' }
-        ];
-        
-        const paiementsHtml = paiementsList.map(paiement => `
-            <tr>
-                <td>${paiement.id}</td>
-                <td>${paiement.demande}</td>
-                <td>${paiement.montant}</td>
-                <td>${paiement.methode}</td>
-                <td><span class="status-badge ${paiement.statut.toLowerCase().replace(' ', '-')}">${paiement.statut}</span></td>
-                <td>${paiement.date}</td>
-            </tr>
-        `).join('');
-        
-        document.getElementById('payments-list').innerHTML = paiementsHtml;
-        
-        // Load timeline
-        const timelineEvents = [
-            { icon: 'fa-ticket-alt', date: '2023-05-10 09:30', content: 'Demande #123 créée' },
-            { icon: 'fa-user-cog', date: '2023-05-11 14:15', content: 'Demande #123 assignée à Technicien Martin' },
-            { icon: 'fa-check-circle', date: '2023-05-12 16:45', content: 'Demande #123 marquée comme terminée' }
-        ];
-        
-        const timelineHtml = timelineEvents.map((event, index) => `
-            <div class="timeline-item">
-                <div class="timeline-icon">
-                    <i class="fas ${event.icon}"></i>
+    fetch(`https://snt-backend-9hhe.onrender.com/api/clients/${userId}/dashboard`)
+        .then(response => response.json())
+        .then(data => {
+            // Update stats
+            document.getElementById('demandes-en-cours').textContent = data.stats.enCours;
+            document.getElementById('demandes-terminees').textContent = data.stats.terminees;
+            document.getElementById('paiements-attente').textContent = data.stats.attente;
+
+            // Load demandes
+            const demandesHtml = data.demandes.map(demande => `
+                <tr>
+                    <td>${demande.id}</td>
+                    <td>${demande.type}</td>
+                    <td><span class="status-badge ${demande.statut.toLowerCase().replace(' ', '-')}">${demande.statut}</span></td>
+                    <td>${demande.date}</td>
+                    <td>${demande.technicien}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm">Détails</button>
+                    </td>
+                </tr>
+            `).join('');
+            document.getElementById('demandes-list').innerHTML = demandesHtml;
+
+            // Load paiements
+            const paiementsHtml = data.paiements.map(paiement => `
+                <tr>
+                    <td>${paiement.id}</td>
+                    <td>${paiement.demande}</td>
+                    <td>${paiement.montant}</td>
+                    <td>${paiement.methode}</td>
+                    <td><span class="status-badge ${paiement.statut.toLowerCase().replace(' ', '-')}">${paiement.statut}</span></td>
+                    <td>${paiement.date}</td>
+                </tr>
+            `).join('');
+            document.getElementById('payments-list').innerHTML = paiementsHtml;
+
+            // Load timeline
+            const timelineHtml = data.timeline.map(event => `
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <i class="fas ${event.icon}"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">${event.date}</div>
+                        <p>${event.content}</p>
+                    </div>
                 </div>
-                <div class="timeline-content">
-                    <div class="timeline-date">${event.date}</div>
-                    <p>${event.content}</p>
-                </div>
-            </div>
-        `).join('');
-        
-        document.querySelector('.timeline-container').innerHTML = timelineHtml;
-    }, 500);
+            `).join('');
+            document.querySelector('.timeline-container').innerHTML = timelineHtml;
+        })
+        .catch(error => {
+            console.error('Erreur lors du chargement des données client :', error);
+        });
 }
 
+
 function loadTechnicienData(userId) {
-    // Simulate API call to get technicien data
-    setTimeout(() => {
-        // Update stats
-        document.getElementById('demandes-en-cours').textContent = '3';
-        document.getElementById('demandes-terminees').textContent = '12';
-        document.getElementById('demandes-attente').textContent = '2';
-        
-        // Load demandes assignées
-        const demandesList = [
-            { id: '456', client: 'John Doe', type: 'Réseau', statut: 'En cours', date: '2023-05-15', priorite: 'Haute' },
-            { id: '789', client: 'Jane Smith', type: 'Matériel', statut: 'En attente', date: '2023-05-14', priorite: 'Moyenne' }
-        ];
-        
-        const demandesHtml = demandesList.map(demande => `
-            <tr>
-                <td>${demande.id}</td>
-                <td>${demande.client}</td>
-                <td>${demande.type}</td>
-                <td><span class="status-badge ${demande.statut.toLowerCase().replace(' ', '-')}">${demande.statut}</span></td>
-                <td>${demande.date}</td>
-                <td><span class="priority-badge ${demande.priorite.toLowerCase()}">${demande.priorite}</span></td>
-                <td>
-                    <button class="btn btn-secondary btn-sm">Détails</button>
-                    <button class="btn btn-primary btn-sm">Mettre à jour</button>
-                </td>
-            </tr>
-        `).join('');
-        
-        document.getElementById('technicien-demandes-list').innerHTML = demandesHtml;
-        
-        // Load priority tasks
-        const priorityTasks = [
-            { id: '456', client: 'John Doe', type: 'Problème de réseau', deadline: '2023-05-18' }
-        ];
-        
-        const tasksHtml = priorityTasks.map(task => `
-            <div class="task-item priority-high">
-                <div class="task-info">
-                    <h4>Demande #${task.id} - ${task.type}</h4>
-                    <p>Client: ${task.client}</p>
-                    <p>Date limite: ${task.deadline}</p>
+    fetch(`https://snt-backend-9hhe.onrender.com/api/techniciens/${userId}/dashboard`)
+        .then(response => response.json())
+        .then(data => {
+            // Update stats
+            document.getElementById('demandes-en-cours').textContent = data.stats.enCours;
+            document.getElementById('demandes-terminees').textContent = data.stats.terminees;
+            document.getElementById('demandes-attente').textContent = data.stats.attente;
+
+            // Load demandes
+            const demandesHtml = data.demandes.map(demande => `
+                <tr>
+                    <td>${demande.id}</td>
+                    <td>${demande.client}</td>
+                    <td>${demande.type}</td>
+                    <td><span class="status-badge ${demande.statut.toLowerCase().replace(' ', '-')}">${demande.statut}</span></td>
+                    <td>${demande.date}</td>
+                    <td><span class="priority-badge ${demande.priorite.toLowerCase()}">${demande.priorite}</span></td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm">Détails</button>
+                        <button class="btn btn-primary btn-sm">Mettre à jour</button>
+                    </td>
+                </tr>
+            `).join('');
+            document.getElementById('technicien-demandes-list').innerHTML = demandesHtml;
+
+            // Load priority tasks
+            const tasksHtml = data.tachesPrioritaires.map(task => `
+                <div class="task-item priority-high">
+                    <div class="task-info">
+                        <h4>Demande #${task.id} - ${task.type}</h4>
+                        <p>Client: ${task.client}</p>
+                        <p>Date limite: ${task.deadline}</p>
+                    </div>
+                    <button class="btn btn-primary">Traiter</button>
                 </div>
-                <button class="btn btn-primary">Traiter</button>
-            </div>
-        `).join('');
-        
-        document.querySelector('.tasks-list').innerHTML = tasksHtml;
-    }, 500);
+            `).join('');
+            document.querySelector('.tasks-list').innerHTML = tasksHtml;
+        })
+        .catch(error => {
+            console.error("Erreur lors du chargement des données technicien :", error);
+        });
 }
+
 
 function loadAdminData() {
     // Simulate API call to get admin data
@@ -519,21 +499,66 @@ class NotificationManager {
 // Initialisation quand la page est chargée
 document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('token')) {
-        new NotificationManager();
+        const apiBaseUrl = 'https://snt-backend-9hhe.onrender.com';
+        new NotificationManager(apiBaseUrl);
     }
 });
 
-function loadDemandes() {
-    // Load demandes data when section is activated
+const API_BASE_URL = 'https://snt-backend-9hhe.onrender.com';
+
+async function loadDemandes() {
     console.log('Loading demandes data...');
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/demandes`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const demandes = await response.json();
+            console.log('Demandes:', demandes);
+            // Ici, tu peux mettre à jour ton interface avec les demandes
+        } else {
+            console.error('Erreur chargement demandes:', response.status);
+        }
+    } catch (error) {
+        console.error('Erreur réseau demandes:', error);
+    }
 }
 
-function loadPaiements() {
-    // Load paiements data when section is activated
+async function loadPaiements() {
     console.log('Loading paiements data...');
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/paiements`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const paiements = await response.json();
+            console.log('Paiements:', paiements);
+            // Ici, tu peux mettre à jour ton interface avec les paiements
+        } else {
+            console.error('Erreur chargement paiements:', response.status);
+        }
+    } catch (error) {
+        console.error('Erreur réseau paiements:', error);
+    }
 }
 
-function loadProfil() {
-    // Load profil data when section is activated
+async function loadProfil() {
     console.log('Loading profil data...');
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/profil`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const profil = await response.json();
+            console.log('Profil:', profil);
+            // Ici, tu peux mettre à jour ton interface avec les infos du profil
+        } else {
+            console.error('Erreur chargement profil:', response.status);
+        }
+    } catch (error) {
+        console.error('Erreur réseau profil:', error);
+    }
 }
