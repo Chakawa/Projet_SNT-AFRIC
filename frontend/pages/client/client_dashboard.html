@@ -1,23 +1,137 @@
-<!-- client_dashboard.html -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espace Client - SNT AFRIC</title>
-    <link rel="stylesheet" href="../../css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Espace Client - SNT AFRIC</title>
+  <link rel="stylesheet" href="../../css/styles.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+      background: #f9f9f9;
+      color: #333;
+      padding: 20px;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px 25px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    p.welcome-msg {
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+      color: #555;
+    }
+
+    nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 auto 40px auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      max-width: 600px;
+    }
+
+    nav ul li {
+      /* Rien ici, la grille gère */
+    }
+
+    nav ul li a {
+      display: block;
+      text-decoration: none;
+      padding: 14px 0;
+      background-color: #4800ff;
+      color: white;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 8px rgba(72,0,255,0.3);
+      user-select: none;
+    }
+
+    nav ul li a:hover,
+    nav ul li a:focus {
+      background-color: #3600cc;
+      outline: none;
+    }
+
+    button#logoutBtn {
+      padding: 12px 35px;
+      background-color: #c95f08;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      box-shadow: 0 4px 8px rgba(201,95,8,0.4);
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+
+    button#logoutBtn:hover,
+    button#logoutBtn:focus {
+      background-color: #a04a06;
+      outline: none;
+    }
+
+    /* Responsive pour mobile */
+    @media (max-width: 400px) {
+      nav ul {
+        grid-template-columns: 1fr;
+        max-width: 100%;
+      }
+      button#logoutBtn {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Espace Client</h2>
-        <nav>
-            <ul>
-                <li><a href="demande_fibre.html">Demande Fibre Optique</a></li>
-                <li><a href="demande_video.html">Demande Vidéosurveillance</a></li>
-                <li><a href="demande_telephonie.html">Demande Téléphonie</a></li>
-                <li><a href="demande_it.html">Demande Maintenance IT</a></li>
-            </ul>
-        </nav>
-    </div>
+  <div class="container">
+    <h2>Espace Client</h2>
+    <p class="welcome-msg">Bienvenue dans votre espace client. Sélectionnez un service pour faire une demande.</p>
+
+    <nav aria-label="Navigation des services">
+      <ul>
+        <li><a href="demande_fibre.html">Demande Fibre Optique</a></li>
+        <li><a href="demande_video.html">Demande Vidéosurveillance</a></li>
+        <li><a href="demande_telephonie.html">Demande Téléphonie</a></li>
+        <li><a href="demande_it.html">Demande Maintenance IT</a></li>
+      </ul>
+    </nav>
+
+    <button id="logoutBtn" aria-label="Déconnexion">Déconnexion</button>
+  </div>
+
+  <script>
+    // Vérification du token (authentification)
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert("Vous devez être connecté pour accéder à cette page.");
+        window.location.href = 'login.html';
+      }
+    });
+
+    // Fonction de déconnexion
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+    });
+  </script>
 </body>
 </html>
